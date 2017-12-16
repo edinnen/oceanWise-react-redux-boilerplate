@@ -71,7 +71,7 @@ const store = configureStore(initialState, history);
 // Subscribe to the Redux store and save it to the local storage for later access; throttle to only once per second to help preformance
 store.subscribe(throttle(() => {
   saveState({
-    language: store.getState().get('language') // Get and set only the language from the state
+    language: store.getState().get('language'), // Get and set only the language from the state
   });
 }, 1000));
 
