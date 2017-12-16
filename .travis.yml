@@ -15,8 +15,7 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 
 notifications:
-  email:
-    on_failure: change
+  slack: ocean-wise-content:o6zq7Vvnu9SE6BGcLXHNJCke
 
 cache:
   yarn: true
