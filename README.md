@@ -1,4 +1,6 @@
+<div align="center">
 # Ocean Wise React/Redux Boilerplate
+</div>
 
 <div align="center"><strong>Based upon react-boilerplate</strong></div>
 <div align="center">A highly scalable, offline-first foundation with the best DX and a focus on performance and best practices</div>
