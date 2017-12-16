@@ -1,5 +1,5 @@
 <div align="center">
-# Ocean Wise React/Redux Boilerplate
+<h1>Ocean Wise React/Redux Boilerplate</h1>
 </div>
 
 <div align="center"><strong>Based upon react-boilerplate</strong></div>
