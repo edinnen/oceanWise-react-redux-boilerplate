@@ -20,6 +20,6 @@ describe('localStorage', () => {
   });
 
   it('should not throw if passed valid state', () => {
-    expect(() => saveState(store.getState())).not.toThrow();
+    expect(() => saveState(store)).not.toThrow();
   });
 });
