@@ -10,8 +10,8 @@ describe('localStorage', () => {
   beforeEach(() => {
     store = {
       language: {
-        locale: 'de'
-      }
+        locale: 'de',
+      },
     };
   });
 
@@ -21,5 +21,5 @@ describe('localStorage', () => {
 
   it('should not throw if passed valid state', () => {
     expect(() => saveState(store.getState())).not.toThrow();
-  })
-})
+  });
+});
