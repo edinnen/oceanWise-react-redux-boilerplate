@@ -1,18 +1,17 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { FormattedMessage } from 'react-intl';
 
-import messages from '../messages';
 import Footer from '../index';
+import Links from '../Links';
 
 describe('<Footer />', () => {
-  it('should render the copyright notice', () => {
+  it('should render the Links', () => {
     const renderedComponent = shallow(
       <Footer />
     );
     expect(renderedComponent.contains(
       <section>
-        <FormattedMessage {...messages.licenseMessage} />
+        <Links />
       </section>
     )).toBe(true);
   });

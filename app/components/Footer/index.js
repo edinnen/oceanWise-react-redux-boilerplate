@@ -5,17 +5,21 @@ import A from 'components/A';
 import LocaleToggle from 'containers/LocaleToggle';
 import Wrapper from './Wrapper';
 import messages from './messages';
+import Logo from './Logo';
+import OWLogo from './logo.svg';
+import Links from './Links';
 
 function Footer() {
   return (
     <Wrapper>
       <section>
-        <FormattedMessage {...messages.licenseMessage} />
+        <Links />
       </section>
       <section>
         <LocaleToggle />
       </section>
       <section>
+        <Logo src={OWLogo} alt="Ocean Wise" />
         <FormattedMessage
           {...messages.authorMessage}
           values={{
