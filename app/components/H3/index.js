@@ -1,9 +1,9 @@
-import React from 'react';
+import styled from 'styled-components';
 
-function H3(props) {
-  return (
-    <h3 {...props} />
-  );
-}
+const H4 = styled.h3`
+  line-height: 1.22
+  font-weight: 700
+  font-size: 1.22rem
+`;
 
-export default H3;
+export default H4;

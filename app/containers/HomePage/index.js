@@ -15,13 +15,16 @@ import { createStructuredSelector } from 'reselect';
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
 import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/App/selectors';
+import Header from 'components/Header';
 import H2 from 'components/H2';
+import P from 'components/P';
 import ReposList from 'components/ReposList';
 import AtPrefix from './AtPrefix';
 import CenteredSection from './CenteredSection';
 import Form from './Form';
 import Input from './Input';
 import Section from './Section';
+import Wrapper from './Wrapper';
 import messages from './messages';
 import { loadRepos } from '../App/actions';
 import { changeUsername } from './actions';
@@ -49,18 +52,19 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 
     return (
       <article>
+        <Header />
         <Helmet>
           <title>Home Page</title>
           <meta name="description" content="A React.js Boilerplate application homepage" />
         </Helmet>
-        <div>
+        <Wrapper>
           <CenteredSection>
             <H2>
               <FormattedMessage {...messages.startProjectHeader} />
             </H2>
-            <p>
+            <P>
               <FormattedMessage {...messages.startProjectMessage} />
-            </p>
+            </P>
           </CenteredSection>
           <Section>
             <H2>
@@ -83,7 +87,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             </Form>
             <ReposList {...reposListProps} />
           </Section>
-        </div>
+        </Wrapper>
       </article>
     );
   }
