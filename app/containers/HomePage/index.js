@@ -11,6 +11,8 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
+import { RadioGroup, Radio } from 'react-radio-group';
+import { Checkbox, CheckboxGroup } from 'react-checkbox-group';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
@@ -33,6 +35,17 @@ import reducer from './reducer';
 import saga from './saga';
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+  constructor(props) {
+    super(props);
+    this.state = {
+      radioValue: 'apple',
+      checkValue: ['apple'],
+    };
+    this.handleRadioChange = this.handleRadioChange.bind(this);
+    this.getRadioState = this.getRadioState.bind(this);
+    this.handleCheckChange = this.handleCheckChange.bind(this);
+  }
+
   /**
    * when initial state username is not null, submit the form to load repos
    */
@@ -42,12 +55,29 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     }
   }
 
+  getRadioState() {
+    const { radioValue } = this.state;
+    return radioValue;
+  }
+
+  handleRadioChange(value) {
+    this.setState({ radioValue: value });
+  }
+
+  handleCheckChange(value) {
+    this.setState({ checkValue: value });
+  }
+
   render() {
     const { loading, error, repos } = this.props;
     const reposListProps = {
       loading,
       error,
       repos,
+    };
+
+    const style = {
+      marginLeft: '10px',
     };
 
     return (
@@ -65,6 +95,37 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             <P>
               <FormattedMessage {...messages.startProjectMessage} />
             </P>
+            <RadioGroup
+              name="fruit"
+              selectedValue={this.state.selectedValue}
+              onChange={this.handleRadioChange}
+            >
+              <label htmlFor="apple" style={style}>
+                <Radio value="apple" /> Apple
+              </label>
+              <label htmlFor="orange" style={style}>
+                <Radio value="orange" /> Orange
+              </label>
+              <label htmlFor="watermelon" style={style}>
+                <Radio value="watermelon" /> Watermelon
+              </label>
+            </RadioGroup>
+            <CheckboxGroup
+              checkboxDepth={2} // This is needed to optimize the checkbox group
+              name="fruits"
+              value={this.state.checkValue}
+              onChange={this.handleCheckChange}
+            >
+              <label htmlFor="apple" style={style}>
+                <Checkbox value="apple" /> Apple
+              </label>
+              <label htmlFor="orange" style={style}>
+                <Checkbox value="orange" /> Orange
+              </label>
+              <label htmlFor="watermelon" style={style}>
+                <Checkbox value="watermelon" /> Watermelon
+              </label>
+            </CheckboxGroup>
           </CenteredSection>
           <Section>
             <H2>
