@@ -1,10 +1,11 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
+import Button from 'components/Button';
 
 import A from './A';
 import Img from './Img';
 import NavBar from './NavBar';
-import HeaderLink from './HeaderLink';
 import Banner from './banner.jpg';
 import Container from './Container';
 import Logo from './Logo';
@@ -48,9 +49,16 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
           </Container>
         </A>
         <NavBar>
-          <HeaderLink to="/">
-            <FormattedMessage {...messages.home} />
-          </HeaderLink>
+          <Link to="/">
+            <Button id="home">
+              <FormattedMessage {...messages.home} />
+            </Button>
+          </Link>
+          <Link to="/">
+            <Button id="invert-test" inverted>
+              Featured
+            </Button>
+          </Link>
         </NavBar>
       </div>
     );

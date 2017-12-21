@@ -11,8 +11,6 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
-import { RadioGroup, Radio } from 'react-radio-group';
-import { Checkbox, CheckboxGroup } from 'react-checkbox-group';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
@@ -20,6 +18,7 @@ import { makeSelectRepos, makeSelectLoading, makeSelectError } from 'containers/
 import Header from 'components/Header';
 import H2 from 'components/H2';
 import P from 'components/P';
+import CheckBox from 'components/CheckBox';
 import ReposList from 'components/ReposList';
 import AtPrefix from './AtPrefix';
 import CenteredSection from './CenteredSection';
@@ -35,37 +34,37 @@ import reducer from './reducer';
 import saga from './saga';
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+
+  // Set up the state for the checkboxes
   constructor(props) {
     super(props);
     this.state = {
-      radioValue: 'apple',
-      checkValue: ['apple'],
+      checked: [],
     };
-    this.handleRadioChange = this.handleRadioChange.bind(this);
-    this.getRadioState = this.getRadioState.bind(this);
-    this.handleCheckChange = this.handleCheckChange.bind(this);
+    this.handleCheck = this.handleCheck.bind(this);
   }
+
 
   /**
    * when initial state username is not null, submit the form to load repos
    */
+
   componentDidMount() {
     if (this.props.username && this.props.username.trim().length > 0) {
       this.props.onSubmitForm();
     }
   }
 
-  getRadioState() {
-    const { radioValue } = this.state;
-    return radioValue;
-  }
-
-  handleRadioChange(value) {
-    this.setState({ radioValue: value });
-  }
-
-  handleCheckChange(value) {
-    this.setState({ checkValue: value });
+  // Handle checkbox checks. Update the items selected in the 'checked' state array
+  handleCheck = (data) => {
+    const { checked } = this.state;
+    if (checked.some((item) => data === item)) { // If the checked item is already in the array remove it
+      const i = checked.indexOf(data);
+      checked.splice(i, 1);
+      this.setState({ checked });
+    } else { // Otherwise append it
+      this.setState({ checked: [...checked, data] });
+    }
   }
 
   render() {
@@ -74,10 +73,6 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
       loading,
       error,
       repos,
-    };
-
-    const style = {
-      marginLeft: '10px',
     };
 
     return (
@@ -95,37 +90,11 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             <P>
               <FormattedMessage {...messages.startProjectMessage} />
             </P>
-            <RadioGroup
-              name="fruit"
-              selectedValue={this.state.selectedValue}
-              onChange={this.handleRadioChange}
-            >
-              <label htmlFor="apple" style={style}>
-                <Radio value="apple" /> Apple
-              </label>
-              <label htmlFor="orange" style={style}>
-                <Radio value="orange" /> Orange
-              </label>
-              <label htmlFor="watermelon" style={style}>
-                <Radio value="watermelon" /> Watermelon
-              </label>
-            </RadioGroup>
-            <CheckboxGroup
-              checkboxDepth={2} // This is needed to optimize the checkbox group
-              name="fruits"
-              value={this.state.checkValue}
-              onChange={this.handleCheckChange}
-            >
-              <label htmlFor="apple" style={style}>
-                <Checkbox value="apple" /> Apple
-              </label>
-              <label htmlFor="orange" style={style}>
-                <Checkbox value="orange" /> Orange
-              </label>
-              <label htmlFor="watermelon" style={style}>
-                <Checkbox value="watermelon" /> Watermelon
-              </label>
-            </CheckboxGroup>
+            <center style={{ display: 'inline-flex', flexDirection: 'row' }}>
+              <CheckBox id="standard" callback={this.handleCheck} label="Checkbox" />
+              <CheckBox id="heart" heart callback={this.handleCheck} label="Heart" />
+              <CheckBox id="visibility" visibility callback={this.handleCheck} label="Visibility" />
+            </center>
           </CenteredSection>
           <Section>
             <H2>
