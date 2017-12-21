@@ -69,18 +69,8 @@ class CheckBox extends React.Component { // eslint-disable-line react/prefer-sta
       );
     }
 
-    const rippleFix = `
-      #${this.props.id} span {
-        top: -11px !important;
-        left: 0 !important;
-      }
-    `;
-
     return (
       <div id={this.props.id} style={styles.block}>
-        <style>
-          {rippleFix}
-        </style>
         {box}
       </div>
     );

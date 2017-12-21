@@ -8,6 +8,11 @@ injectGlobal`
     width: 100%;
   }
 
+  input + div span {
+    top: -11px !important;
+    left: 0 !important;
+  }
+
   body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   }

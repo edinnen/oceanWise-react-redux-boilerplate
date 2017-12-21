@@ -11,6 +11,9 @@ import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { createStructuredSelector } from 'reselect';
+import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
+import ActionFavorite from 'material-ui/svg-icons/action/favorite';
+import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
@@ -40,8 +43,10 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     super(props);
     this.state = {
       checked: [],
+      radio: 'not_light',
     };
     this.handleCheck = this.handleCheck.bind(this);
+    this.radioChange = this.radioChange.bind(this);
   }
 
 
@@ -67,6 +72,12 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     }
   }
 
+  radioChange(e) {
+    this.setState({
+      radio: e.currentTarget.value,
+    });
+  }
+
   render() {
     const { loading, error, repos } = this.props;
     const reposListProps = {
@@ -74,6 +85,19 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
       error,
       repos,
     };
+
+    const styles = {
+      radioButton: {
+        marginBottom: 16,
+      },
+    };
+
+    let checkedVals;
+    if (this.state.checked.length === 0) {
+      checkedVals = 'none';
+    } else {
+      checkedVals = this.state.checked.join(', ');
+    }
 
     return (
       <article>
@@ -90,10 +114,36 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
             <P>
               <FormattedMessage {...messages.startProjectMessage} />
             </P>
+            <span>Checked: { checkedVals }</span>
+            <br />
             <center style={{ display: 'inline-flex', flexDirection: 'row' }}>
               <CheckBox id="standard" callback={this.handleCheck} label="Checkbox" />
               <CheckBox id="heart" heart callback={this.handleCheck} label="Heart" />
               <CheckBox id="visibility" visibility callback={this.handleCheck} label="Visibility" />
+            </center>
+            <br />
+            <span>Selected: {this.state.radio}</span>
+            <br />
+            <center id="radios" style={{ display: 'inline-flex', flexDirection: 'row' }}>
+              <RadioButtonGroup onChange={this.radioChange} name="exampleRadios" defaultSelected="2">
+                <RadioButton
+                  value="1"
+                  label="Simple"
+                  style={styles.radioButton}
+                />
+                <RadioButton
+                  value="2"
+                  label="Selected by default"
+                  style={styles.radioButton}
+                />
+                <RadioButton
+                  value="3"
+                  label="Custom icon"
+                  checkedIcon={<ActionFavorite style={{ color: '#F44336' }} />}
+                  uncheckedIcon={<ActionFavoriteBorder />}
+                  style={styles.radioButton}
+                />
+              </RadioButtonGroup>
             </center>
           </CenteredSection>
           <Section>
