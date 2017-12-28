@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import A from 'components/A';
 import LocaleToggle from 'containers/LocaleToggle';
 import Wrapper from './Wrapper';
+import Section from './Section';
 import messages from './messages';
 import Logo from './Logo';
 import OWLogo from './logo.svg';
@@ -12,13 +13,13 @@ import Links from './Links';
 function Footer() {
   return (
     <Wrapper>
-      <section>
+      <Section>
         <Links />
-      </section>
-      <section>
+      </Section>
+      <Section>
         <LocaleToggle />
-      </section>
-      <section>
+      </Section>
+      <Section>
         <Logo src={OWLogo} alt="Ocean Wise" />
         <FormattedMessage
           {...messages.authorMessage}
@@ -26,7 +27,7 @@ function Footer() {
             author: <A href="https://edinnen.github.io/">Ethan Dinnen</A>,
           }}
         />
-      </section>
+      </Section>
     </Wrapper>
   );
 }

@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import Footer from '../index';
+import Section from '../Section';
 import Links from '../Links';
 
 describe('<Footer />', () => {
@@ -10,9 +11,9 @@ describe('<Footer />', () => {
       <Footer />
     );
     expect(renderedComponent.contains(
-      <section>
+      <Section>
         <Links />
-      </section>
+      </Section>
     )).toBe(true);
   });
 });

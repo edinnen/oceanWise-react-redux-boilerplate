@@ -6,6 +6,7 @@
 - [CSS Support](#css-we-support)
 - [styled-components](#styled-components)
 - [Stylesheet](#stylesheet)
+- [Theme](#theme)
 - [CSS Modules](#css-modules)
 - [Sass](#sass)
 - [LESS](#less)
@@ -107,6 +108,21 @@ class Button extends React.Component {
 ```
 
 > For more information about Stylesheets and the `css-loader` see https://github.com/webpack-contrib/css-loader
+
+## Theme
+
+This boilerplate has implemented the Ocean Wise Style Guide. Variables for colours and device breakpoints can be found in *styles/theme.js*. These variables are accessible via the Ramda library. A call for primaryBlue in a styled component would look like:
+
+```
+import R from 'ramda';
+import styled from 'styled-components';
+
+const P = styled.p`
+  color: ${R.path(["theme", "primaryBlue"])};
+`;
+
+export default P;
+```
 
 ## CSS Modules
 

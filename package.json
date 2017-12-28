@@ -228,6 +228,7 @@
     "material-ui": "^0.20.0",
     "minimist": "1.2.0",
     "prop-types": "15.5.10",
+    "ramda": "^0.25.0",
     "react": "15.6.1",
     "react-checkbox-group": "^3.3.4",
     "react-dom": "15.6.1",
