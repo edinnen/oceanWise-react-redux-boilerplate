@@ -10,4 +10,8 @@ export default defineMessages({
     id: 'boilerplate.components.Header.home',
     defaultMessage: 'Home',
   },
+  cosmic: {
+    id: 'boilerplate.components.Header.cosmic',
+    defaultMessage: 'Cosmic',
+  },
 });

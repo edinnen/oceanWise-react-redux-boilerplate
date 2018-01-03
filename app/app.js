@@ -22,6 +22,7 @@ import { ThemeProvider } from 'styled-components';
 // Import root app
 import App from 'containers/App';
 
+
 // Import Language Provider
 import LanguageProvider from 'containers/LanguageProvider';
 
@@ -76,6 +77,7 @@ const store = configureStore(initialState, history);
 store.subscribe(throttle(() => {
   saveState({
     language: store.getState().get('language'), // Get and set only the language from the state
+    // apollo: store.getState().get('apollo'),
   });
 }, 1000));
 

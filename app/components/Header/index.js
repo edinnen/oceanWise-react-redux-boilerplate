@@ -59,6 +59,11 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
               Material UI
             </Button>
           </A>
+          <Link to="/cosmic">
+            <Button id="cosmic">
+              <FormattedMessage {...messages.cosmic} />
+            </Button>
+          </Link>
         </NavBar>
       </div>
     );

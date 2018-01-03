@@ -1,6 +1,7 @@
 {
   "boilerplate.components.Footer.author.message": "Fait avec amour par {author}.",
   "boilerplate.components.Header.home": "Home",
+  "boilerplate.components.Header.cosmic": "Cosmic",
   "boilerplate.components.Footer.LinkRow1": "Rangée 1",
   "boilerplate.components.Footer.Row1Link1": "Lien 1",
   "boilerplate.components.Footer.Row1Link2": "Lien 2",

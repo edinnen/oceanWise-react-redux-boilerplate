@@ -80,6 +80,10 @@ module.exports = (options) => ({
           },
         },
       },
+      {
+        test: /\.(graphql|gql)$/,
+        use: 'graphql-tag/loader',
+      },
     ],
   },
   plugins: options.plugins.concat([

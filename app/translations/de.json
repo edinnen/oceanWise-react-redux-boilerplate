@@ -1,6 +1,7 @@
 {
   "boilerplate.components.Footer.author.message": "Mit Liebe gemacht von {author}.",
   "boilerplate.components.Header.home": "",
+  "boilerplate.components.Header.cosmic": "",
   "boilerplate.components.Footer.LinkRow1": "Reihe 1",
   "boilerplate.components.Footer.Row1Link1": "Verknüpfung 1",
   "boilerplate.components.Footer.Row1Link2": "Verknüpfung 2",

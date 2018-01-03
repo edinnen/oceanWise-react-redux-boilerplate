@@ -13,8 +13,10 @@ import { Switch, Route } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import HomePage from 'containers/HomePage/Loadable';
+import CosmicTest from 'containers/CosmicTest/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Footer from 'components/Footer';
+import Post from 'components/Post';
 
 const AppWrapper = styled.div`
   max-width: 100%;
@@ -37,6 +39,8 @@ export default function App() {
         </Helmet>
         <Switch>
           <Route exact path="/" component={HomePage} />
+          <Route exact path="/cosmic" component={CosmicTest} />
+          <Route path="/post/:postSlug" component={Post} />
           <Route path="" component={NotFoundPage} />
         </Switch>
         <Footer />
