@@ -20,6 +20,7 @@ import injectReducer from 'utils/injectReducer';
 import config from '../../cosmicConfig';
 import makeSelectCosmicTest from './selectors';
 import reducer from './reducer';
+import { listLoaded } from './actions';
 
 export class CosmicTest extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -31,7 +32,6 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
     };
     this.getPages = this.getPages.bind(this);
   }
-
 
   // Set to loading then load the posts
   componentWillMount() {
@@ -52,6 +52,7 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
         data: res.data.data.objectsByType,
         loading: false,
       });
+      this.props.dispatch(listLoaded(this.state.data));
     });
   }
 

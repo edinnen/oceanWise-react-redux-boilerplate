@@ -77,7 +77,7 @@ const store = configureStore(initialState, history);
 store.subscribe(throttle(() => {
   saveState({
     language: store.getState().get('language'), // Get and set only the language from the state
-    // apollo: store.getState().get('apollo'),
+    cosmicTest: store.getState().get('cosmicTest'),
   });
 }, 1000));
 

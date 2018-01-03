@@ -9,7 +9,6 @@ const selectCosmicTestDomain = (state) => state.get('cosmicTest');
  * Other specific selectors
  */
 
-
 /**
  * Default selector used by CosmicTest
  */

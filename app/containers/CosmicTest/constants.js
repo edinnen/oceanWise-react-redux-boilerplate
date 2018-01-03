@@ -4,4 +4,5 @@
  *
  */
 
-export const DEFAULT_ACTION = 'app/CosmicTest/DEFAULT_ACTION';
+export const LIST_LOADED = 'app/CosmicTest/LIST_LOADED';
+export const POST_LOADED = 'app/CosmicTest/LIST_LOADED';
