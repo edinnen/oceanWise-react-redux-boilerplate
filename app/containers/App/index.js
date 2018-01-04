@@ -16,7 +16,7 @@ import HomePage from 'containers/HomePage/Loadable';
 import CosmicTest from 'containers/CosmicTest/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Footer from 'components/Footer';
-import Post from 'components/Post';
+import Post from 'containers/Post';
 
 const AppWrapper = styled.div`
   max-width: 100%;

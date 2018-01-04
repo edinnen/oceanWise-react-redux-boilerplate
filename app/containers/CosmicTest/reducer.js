@@ -5,6 +5,7 @@
  */
 
 import { fromJS } from 'immutable';
+import moment from 'moment';
 
 import {
   LIST_LOADED,
@@ -14,27 +15,25 @@ import {
 // Initialize the state
 const initialState = fromJS({
   loaded: false,
+  timestamp: moment().unix(),
   postList: [],
-  fetchedContent: [],
+  postData: {},
 });
 
 function cosmicTestReducer(state = initialState, action) {
   switch (action.type) {
     case LIST_LOADED: {
-      // Create a new state
-      const newState = fromJS({
-        loaded: true, // Set loaded to true
-        postList: action.listData, // Put the fetched posts into postList
-        fetchedContent: state.fetchedContent, // Leave fetchedContent unchanged
-      });
-      return newState; // Return the new state
+      // Set the timestamp to the time when this reducer was called, update the postList with the most recently pulled post previews
+      return state
+        .set('loaded', true)
+        .set('timestamp', moment().unix())
+        .set('postList', action.listData);
     }
-    case POST_LOADED:
-      return state;
-        // .set('fetchedContent', [...state.fetchedContent, action.postData]);
-      // return {
-      //   fetchedContent: [...state.postList, action.postData],
-      // };
+    case POST_LOADED: {
+      // Update the state with the full post data
+      return state
+        .set('postData', action.data);
+    }
     default:
       return state;
   }

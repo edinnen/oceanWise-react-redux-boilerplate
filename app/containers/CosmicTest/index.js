@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 import axios from 'axios';
+import moment from 'moment';
 
 import H1 from 'components/H1';
 import { Link } from 'react-router-dom';
@@ -20,7 +21,7 @@ import injectReducer from 'utils/injectReducer';
 import config from '../../cosmicConfig';
 import makeSelectCosmicTest from './selectors';
 import reducer from './reducer';
-import { listLoaded } from './actions';
+import { listLoaded, postLoaded } from './actions';
 
 export class CosmicTest extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -29,17 +30,24 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
     this.state = {
       loading: false,
       data: '',
+      postData: {},
     };
     this.getPages = this.getPages.bind(this);
+    this.getPost = this.getPost.bind(this);
   }
 
-  // Set to loading then load the posts
   componentWillMount() {
+    const store = this.props.cosmictest; // Load the Redux reducer state into 'store'
     this.setState({ loading: true });
-    this.getPages();
+
+    if (store.timestamp < (moment().unix() - 300)) { // If timestamp in store is 5 minutes old...
+      this.getPages(); // Pull data from the server
+    } else {
+      this.setState({ loading: false, data: store.postList, postData: store.postData }); // Loaded data less than 5 minutes ago, so just pull from the store
+    }
   }
 
-  // Get the post data and store it in the state. TODO: Store this within redux!
+  // Get the post data and store it in the state.
   getPages() {
     // Get objects of type 'Post'. From these pull the slug and title
     const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "posts"){slug, title} }'; // eslint-disable-line prefer-template
@@ -53,6 +61,27 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
         loading: false,
       });
       this.props.dispatch(listLoaded(this.state.data));
+      this.state.data.map((page) => {
+        this.getPost(page.slug);
+        return true;
+      });
+    });
+  }
+
+  getPost(slug) {
+    const query = '{ object(bucket_slug: "' + config.bucket.slug + '", slug: "' + slug + '"){title, modifiedAt: modified_at, content, metadata, order} }'; // eslint-disable-line prefer-template
+    axios.post('https://graphql.cosmicjs.com/v1', {
+      query: query, // eslint-disable-line object-shorthand
+      contentType: 'application/graphql',
+    })
+    .then((res) => {
+      const data = this.state.postData;
+      data[slug] = res.data.data.object;
+      this.setState({
+        postData: data,
+        loading: false,
+      });
+      this.props.dispatch(postLoaded(slug, this.state.postData));
     });
   }
 
@@ -97,6 +126,7 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
 
 CosmicTest.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  cosmictest: PropTypes.object.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
