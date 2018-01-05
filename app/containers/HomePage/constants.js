@@ -10,3 +10,5 @@
  */
 
 export const CHANGE_USERNAME = 'boilerplate/Home/CHANGE_USERNAME';
+export const LIST_LOADED = 'boilerplate/Home/LIST_LOADED';
+export const PAGE_LOADED = 'boilerplate/Home/PAGE_LOADED';

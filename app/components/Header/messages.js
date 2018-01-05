@@ -12,6 +12,6 @@ export default defineMessages({
   },
   cosmic: {
     id: 'boilerplate.components.Header.cosmic',
-    defaultMessage: 'Cosmic',
+    defaultMessage: 'CosmicJS Posts',
   },
 });

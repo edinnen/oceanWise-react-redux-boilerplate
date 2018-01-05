@@ -14,6 +14,8 @@ import { createStructuredSelector } from 'reselect';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import ActionFavorite from 'material-ui/svg-icons/action/favorite';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+import axios from 'axios';
+import moment from 'moment';
 
 import injectReducer from 'utils/injectReducer';
 import injectSaga from 'utils/injectSaga';
@@ -31,10 +33,11 @@ import Section from './Section';
 import Wrapper from './Wrapper';
 import messages from './messages';
 import { loadRepos } from '../App/actions';
-import { changeUsername } from './actions';
-import { makeSelectUsername } from './selectors';
+import { changeUsername, listLoaded, pageLoaded } from './actions';
+import { makeSelectUsername, makeSelectHomePage } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
+import config from '../../cosmicConfig';
 
 export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -43,12 +46,27 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     super(props);
     this.state = {
       checked: [],
-      radio: 'not_light',
+      radio: 'default',
+      pageList: [],
+      pageData: {},
+      loading: true,
     };
     this.handleCheck = this.handleCheck.bind(this);
     this.radioChange = this.radioChange.bind(this);
+    this.getPageList = this.getPageList.bind(this);
+    this.getPage = this.getPage.bind(this);
   }
 
+  componentWillMount() {
+    const store = this.props.homepage;
+    this.setState({ loading: true });
+
+    if (store.timestamp < (moment().unix() - 300) || store.pageList.length === 0) {
+      this.getPageList();
+    } else {
+      this.setState({ loading: false, pageList: store.pageList, pageData: store.pageData });
+    }
+  }
 
   /**
    * when initial state username is not null, submit the form to load repos
@@ -58,6 +76,42 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     if (this.props.username && this.props.username.trim().length > 0) {
       this.props.onSubmitForm();
     }
+  }
+
+  getPageList() {
+    // Get objects of type 'Page'. From these pull the slug and title
+    const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "pages"){slug, title} }'; // eslint-disable-line prefer-template
+    axios.post('https://graphql.cosmicjs.com/v1', {
+      query: query, // eslint-disable-line object-shorthand
+      contentType: 'application/graphql',
+    })
+    .then((res) => {
+      this.setState({
+        pageList: res.data.data.objectsByType,
+      });
+      this.props.dispatch(listLoaded(this.state.pageList));
+      this.state.pageList.map((page) => {
+        this.getPage(page.slug);
+        return true;
+      });
+    });
+  }
+
+  getPage(slug) {
+    const query = '{ object(bucket_slug: "' + config.bucket.slug + '", slug: "' + slug + '"){title, modifiedAt: modified_at, content, metadata} }'; // eslint-disable-line prefer-template
+    axios.post('https://graphql.cosmicjs.com/v1', {
+      query: query, // eslint-disable-line object-shorthand
+      contentType: 'application/graphql',
+    })
+    .then((res) => {
+      const data = this.state.pageData;
+      data[slug] = res.data.data.object;
+      this.setState({
+        pageData: data,
+        loading: false,
+      });
+      this.props.dispatch(pageLoaded(slug, this.state.pageData));
+    });
   }
 
   // Handle checkbox checks. Update the items selected in the 'checked' state array
@@ -186,10 +240,13 @@ HomePage.propTypes = {
   onSubmitForm: PropTypes.func,
   username: PropTypes.string,
   onChangeUsername: PropTypes.func,
+  homepage: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 export function mapDispatchToProps(dispatch) {
   return {
+    dispatch,
     onChangeUsername: (evt) => dispatch(changeUsername(evt.target.value)),
     onSubmitForm: (evt) => {
       if (evt !== undefined && evt.preventDefault) evt.preventDefault();
@@ -203,6 +260,7 @@ const mapStateToProps = createStructuredSelector({
   username: makeSelectUsername(),
   loading: makeSelectLoading(),
   error: makeSelectError(),
+  homepage: makeSelectHomePage(),
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);

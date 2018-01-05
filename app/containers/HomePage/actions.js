@@ -17,6 +17,8 @@
 
 import {
   CHANGE_USERNAME,
+  LIST_LOADED,
+  PAGE_LOADED,
 } from './constants';
 
 /**
@@ -30,5 +32,20 @@ export function changeUsername(name) {
   return {
     type: CHANGE_USERNAME,
     name,
+  };
+}
+
+export function listLoaded(listData) {
+  return {
+    type: LIST_LOADED,
+    listData,
+  };
+}
+
+export function pageLoaded(slug, data) {
+  return {
+    type: PAGE_LOADED,
+    slug,
+    data,
   };
 }

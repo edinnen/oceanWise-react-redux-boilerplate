@@ -78,6 +78,7 @@ store.subscribe(throttle(() => {
   saveState({
     language: store.getState().get('language'), // Get and set only the language from the state
     cosmicTest: store.getState().get('cosmicTest'),
+    home: store.getState().get('home'),
   });
 }, 1000));
 

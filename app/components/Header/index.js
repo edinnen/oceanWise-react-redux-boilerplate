@@ -2,6 +2,11 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import Button from 'components/Button';
+// Load in redux stuff to grab the parent container's state
+import { compose } from 'redux';
+import { createStructuredSelector } from 'reselect';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import A from './A';
 import Img from './Img';
@@ -12,6 +17,9 @@ import Logo from './Logo';
 import messages from './messages';
 import DeskLogo from './logo.svg';
 import MobiLogo from './logo-mobile.svg';
+
+// Import the parent containers selector to borrow its state
+import { makeSelectHomePage } from '../../containers/HomePage/selectors';
 
 class Header extends React.Component { // eslint-disable-line react/prefer-stateless-function
   constructor(props) {
@@ -40,6 +48,18 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
 
   render() {
     const { source } = this.state;
+
+    const pageLinks = this.props.homepage.pageList.map((page) => {
+      const url = '/' + page.slug; // eslint-disable-line prefer-template
+      return (
+        <Link to={url} key={page.slug}>
+          <Button id="url">
+            {page.title}
+          </Button>
+        </Link>
+      );
+    });
+
     return (
       <div>
         <A href="https://ocean.org">
@@ -64,10 +84,22 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
               <FormattedMessage {...messages.cosmic} />
             </Button>
           </Link>
+          {pageLinks}
         </NavBar>
       </div>
     );
   }
 }
 
-export default Header;
+Header.propTypes = {
+  homepage: PropTypes.object,
+};
+
+// This maps the parent's state to our prop as we imported the parent's selector!
+const mapStateToProps = createStructuredSelector({
+  homepage: makeSelectHomePage(),
+});
+
+const withConnect = connect(mapStateToProps);
+
+export default compose(withConnect)(Header);

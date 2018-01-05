@@ -40,7 +40,7 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
     const store = this.props.cosmictest; // Load the Redux reducer state into 'store'
     this.setState({ loading: true });
 
-    if (store.timestamp < (moment().unix() - 300)) { // If timestamp in store is 5 minutes old...
+    if (store.timestamp < (moment().unix() - 300) || store.postList.length === 0) { // If timestamp in store is 5 minutes old or if the postList length in store is 0...
       this.getPages(); // Pull data from the server
     } else {
       this.setState({ loading: false, data: store.postList, postData: store.postData }); // Loaded data less than 5 minutes ago, so just pull from the store

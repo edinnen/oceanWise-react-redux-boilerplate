@@ -45,6 +45,7 @@ export default function createReducer(injectedReducers) {
     route: routeReducer,
     global: globalReducer,
     language: languageProviderReducer,
+    home: (state = Map({})) => state,
     cosmicTest: (state = Map({})) => state, // This is required to get around "Unexpected property <REDUCER> found in previous state while saving to store". See http://bit.ly/2CNJIZy
     ...injectedReducers,
   });

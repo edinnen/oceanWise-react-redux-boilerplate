@@ -17,6 +17,7 @@ import CosmicTest from 'containers/CosmicTest/Loadable';
 import NotFoundPage from 'containers/NotFoundPage/Loadable';
 import Footer from 'components/Footer';
 import Post from 'containers/Post';
+import CMSPage from 'containers/CMSPage';
 
 const AppWrapper = styled.div`
   max-width: 100%;
@@ -41,6 +42,7 @@ export default function App() {
           <Route exact path="/" component={HomePage} />
           <Route exact path="/cosmic" component={CosmicTest} />
           <Route path="/post/:postSlug" component={Post} />
+          <Route path="/:pageSlug" component={CMSPage} />
           <Route path="" component={NotFoundPage} />
         </Switch>
         <Footer />
