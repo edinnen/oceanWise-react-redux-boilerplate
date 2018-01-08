@@ -13,9 +13,12 @@ import { fromJS } from 'immutable';
 import moment from 'moment';
 
 import {
+  CHANGE_LOCALE,
+} from 'containers/LanguageProvider/constants';
+
+import {
   CHANGE_USERNAME,
   LIST_LOADED,
-  PAGE_LOADED,
 } from './constants';
 
 // The initial state of the App
@@ -23,7 +26,7 @@ const initialState = fromJS({
   username: '',
   timestamp: moment().unix(),
   pageList: [],
-  pageData: {},
+  localeChange: false,
 });
 
 function homeReducer(state = initialState, action) {
@@ -36,10 +39,11 @@ function homeReducer(state = initialState, action) {
     case LIST_LOADED:
       return state
         .set('timestamp', moment().unix())
+        .set('localeChange', false)
         .set('pageList', action.listData);
-    case PAGE_LOADED:
+    case CHANGE_LOCALE:
       return state
-        .set('pageData', action.data);
+        .set('localeChange', true);
     default:
       return state;
   }

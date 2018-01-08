@@ -33,8 +33,8 @@ import Section from './Section';
 import Wrapper from './Wrapper';
 import messages from './messages';
 import { loadRepos } from '../App/actions';
-import { changeUsername, listLoaded, pageLoaded } from './actions';
-import { makeSelectUsername, makeSelectHomePage } from './selectors';
+import { changeUsername, listLoaded } from './actions';
+import { makeSelectUsername, makeSelectHomePage, makeSelectLocale } from './selectors';
 import reducer from './reducer';
 import saga from './saga';
 import config from '../../cosmicConfig';
@@ -48,20 +48,18 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
       checked: [],
       radio: 'default',
       pageList: [],
-      pageData: {},
       loading: true,
     };
     this.handleCheck = this.handleCheck.bind(this);
     this.radioChange = this.radioChange.bind(this);
     this.getPageList = this.getPageList.bind(this);
-    this.getPage = this.getPage.bind(this);
   }
 
   componentWillMount() {
     const store = this.props.homepage;
     this.setState({ loading: true });
 
-    if (store.timestamp < (moment().unix() - 300) || store.pageList.length === 0) {
+    if (store.timestamp < (moment().unix() - 300) || store.pageList.length === 0 || store.localeChange) {
       this.getPageList();
     } else {
       this.setState({ loading: false, pageList: store.pageList, pageData: store.pageData });
@@ -80,37 +78,24 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
 
   getPageList() {
     // Get objects of type 'Page'. From these pull the slug and title
-    const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "pages"){slug, title} }'; // eslint-disable-line prefer-template
+    const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "pages"){slug, title, metadata} }'; // eslint-disable-line prefer-template
     axios.post('https://graphql.cosmicjs.com/v1', {
       query: query, // eslint-disable-line object-shorthand
       contentType: 'application/graphql',
     })
     .then((res) => {
-      this.setState({
-        pageList: res.data.data.objectsByType,
-      });
-      this.props.dispatch(listLoaded(this.state.pageList));
-      this.state.pageList.map((page) => {
-        this.getPage(page.slug);
+      const uniqueData = [];
+      res.data.data.objectsByType.map((item) => {
+        const found = uniqueData.some((data) => { // eslint-disable-line
+          return data.slug === item.slug;
+        });
+        if (!found) { uniqueData.push(item); }
         return true;
       });
-    });
-  }
-
-  getPage(slug) {
-    const query = '{ object(bucket_slug: "' + config.bucket.slug + '", slug: "' + slug + '"){title, modifiedAt: modified_at, content, metadata} }'; // eslint-disable-line prefer-template
-    axios.post('https://graphql.cosmicjs.com/v1', {
-      query: query, // eslint-disable-line object-shorthand
-      contentType: 'application/graphql',
-    })
-    .then((res) => {
-      const data = this.state.pageData;
-      data[slug] = res.data.data.object;
       this.setState({
-        pageData: data,
-        loading: false,
+        pageList: uniqueData,
       });
-      this.props.dispatch(pageLoaded(slug, this.state.pageData));
+      this.props.dispatch(listLoaded(this.state.pageList));
     });
   }
 
@@ -261,6 +246,7 @@ const mapStateToProps = createStructuredSelector({
   loading: makeSelectLoading(),
   error: makeSelectError(),
   homepage: makeSelectHomePage(),
+  locale: makeSelectLocale(),
 });
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);

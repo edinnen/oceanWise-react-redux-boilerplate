@@ -16,28 +16,64 @@ import { compose } from 'redux';
 import H1 from 'components/H1';
 import Button from 'components/Button';
 import R from 'ramda';
+import axios from 'axios';
 
-import makeSelectPost from './selectors';
+import config from '../../cosmicConfig';
+import makeSelectLocale from './selectors';
+import { postLoaded } from './actions';
 
 export class Post extends React.Component { // eslint-disable-line react/prefer-stateless-function
   constructor() {
     super();
     this.state = {
       loading: true,
-      data: {},
+      postData: {},
+      slug: '',
     };
+    this.getPost = this.getPost.bind(this);
   }
 
 
   componentWillMount() {
-    // Say that we are done loading, set our data to the postData object with the key that matches our slug
-    // Here we use ramda's path command to get the data stored within props.post.postData where the key is equal to props.match.params.postSlug
-    this.setState({ loading: false, data: R.path([this.props.match.params.postSlug], this.props.post.postData) });
+    this.getPost(this.props.match.params.postSlug);
+  }
+
+  /**
+   * Gets the posts of the passed slug, store it to state, and dispatch POST_LOADED
+   *
+   * @param  {string} slug The slug of the post to pull
+   *
+   */
+  getPost(slug) {
+    // As CosmicJS's GraphQL implementation has no locale selector, here we use the REST API instead.
+    axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object/' + slug + '?locale=' + this.props.locale) // eslint-disable-line prefer-template
+    .then((res) => {
+      const data = this.state.postData;
+      data[slug] = res.data.object;
+      this.setState({
+        postData: data,
+        loading: false,
+      });
+      this.props.dispatch(postLoaded(slug, this.state.postData));
+    })
+    // Catch if the post above is not found in the selected language, default to English instead
+    .catch(() => {
+      axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object/' + slug + '?locale=en') // eslint-disable-line prefer-template
+      .then((res) => {
+        const data = this.state.postData;
+        data[slug] = res.data.object;
+        this.setState({
+          postData: data,
+          loading: false,
+        });
+        this.props.dispatch(postLoaded(slug, this.state.postData));
+      });
+    });
   }
 
   render() {
-    const { data } = this.state;
-
+    let { postData } = this.state;
+    postData = R.path([this.props.match.params.postSlug], postData);
     const box = {
       main: {
         padding: '15px',
@@ -60,12 +96,12 @@ export class Post extends React.Component { // eslint-disable-line react/prefer-
           </Button>
         </Link>
         {/* Render all the post data! */}
-        <H1>{data.title}</H1>
-        <span>Author: {data.metadata.author.title}</span><br /><br />
-        <img style={box.img} alt="Hero" src={data.metadata.hero.imgix_url} />
+        <H1>{postData.title}</H1>
+        <span>Author: {postData.metadata.author.title}</span><br /><br />
+        <img style={box.img} alt="Hero" src={postData.metadata.hero.imgix_url} />
         <div
           dangerouslySetInnerHTML={{ // eslint-disable-line react/no-danger
-            __html: data.content,
+            __html: postData.content,
           }}
         />
       </div>
@@ -76,11 +112,14 @@ export class Post extends React.Component { // eslint-disable-line react/prefer-
 
 Post.propTypes = {
   match: PropTypes.object.isRequired,
-  post: PropTypes.object.isRequired,
+  // post: PropTypes.object.isRequired,
+  locale: PropTypes.string.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
-  post: makeSelectPost(),
+  // post: makeSelectPost(),
+  locale: makeSelectLocale(),
 });
 
 function mapDispatchToProps(dispatch) {

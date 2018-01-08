@@ -21,7 +21,7 @@ import injectReducer from 'utils/injectReducer';
 import config from '../../cosmicConfig';
 import makeSelectCosmicTest from './selectors';
 import reducer from './reducer';
-import { listLoaded, postLoaded } from './actions';
+import { listLoaded } from './actions';
 
 export class CosmicTest extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -30,58 +30,46 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
     this.state = {
       loading: false,
       data: '',
-      postData: {},
     };
-    this.getPages = this.getPages.bind(this);
-    this.getPost = this.getPost.bind(this);
+    this.getPosts = this.getPosts.bind(this);
   }
 
   componentWillMount() {
     const store = this.props.cosmictest; // Load the Redux reducer state into 'store'
     this.setState({ loading: true });
 
-    if (store.timestamp < (moment().unix() - 300) || store.postList.length === 0) { // If timestamp in store is 5 minutes old or if the postList length in store is 0...
-      this.getPages(); // Pull data from the server
+    if (store.timestamp < (moment().unix() - 300) || store.postList.length === 0 || store.localeChange) { // If timestamp in store is 5 minutes old or if the postList length in store is 0...
+      this.getPosts(); // Pull data from the server
     } else {
       this.setState({ loading: false, data: store.postList, postData: store.postData }); // Loaded data less than 5 minutes ago, so just pull from the store
     }
   }
 
   // Get the post data and store it in the state.
-  getPages() {
-    // Get objects of type 'Post'. From these pull the slug and title
-    const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "posts"){slug, title} }'; // eslint-disable-line prefer-template
+  getPosts() {
+    // Get objects of type 'Post'. From these pull the slug, title, and metadata. The metadata must be pulled to read the custom "locale" metadata field.
+    // CosmicJS seems to disallow GraphQL queries with the standard locale option
+    const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "posts"){ slug, title } }'; // eslint-disable-line prefer-template
     axios.post('https://graphql.cosmicjs.com/v1', {
       query: query, // eslint-disable-line object-shorthand
       contentType: 'application/graphql',
     })
     .then((res) => {
+      // Find unique and add only slugs (locale causes two objects with the same slug/key which makes React sad)
+      // For our purposes it does not matter which object we use here
+      const uniqueData = [];
+      res.data.data.objectsByType.map((item) => {
+        const found = uniqueData.some((data) => { // eslint-disable-line
+          return data.slug === item.slug;
+        });
+        if (!found) { uniqueData.push(item); }
+        return true;
+      });
       this.setState({
-        data: res.data.data.objectsByType,
+        data: uniqueData,
         loading: false,
       });
       this.props.dispatch(listLoaded(this.state.data));
-      this.state.data.map((page) => {
-        this.getPost(page.slug);
-        return true;
-      });
-    });
-  }
-
-  getPost(slug) {
-    const query = '{ object(bucket_slug: "' + config.bucket.slug + '", slug: "' + slug + '"){title, modifiedAt: modified_at, content, metadata, order} }'; // eslint-disable-line prefer-template
-    axios.post('https://graphql.cosmicjs.com/v1', {
-      query: query, // eslint-disable-line object-shorthand
-      contentType: 'application/graphql',
-    })
-    .then((res) => {
-      const data = this.state.postData;
-      data[slug] = res.data.data.object;
-      this.setState({
-        postData: data,
-        loading: false,
-      });
-      this.props.dispatch(postLoaded(slug, this.state.postData));
     });
   }
 

@@ -7,17 +7,22 @@
 import { fromJS } from 'immutable';
 import moment from 'moment';
 
+// Import the CHANGE_LOCALE constant to access the dispatch from CosmicTest when called from LanguageProvider
+import {
+  CHANGE_LOCALE,
+} from 'containers/LanguageProvider/constants';
+
 import {
   LIST_LOADED,
-  POST_LOADED,
 } from './constants';
+
 
 // Initialize the state
 const initialState = fromJS({
   loaded: false,
   timestamp: moment().unix(),
+  localeChange: false,
   postList: [],
-  postData: {},
 });
 
 function cosmicTestReducer(state = initialState, action) {
@@ -27,13 +32,12 @@ function cosmicTestReducer(state = initialState, action) {
       return state
         .set('loaded', true)
         .set('timestamp', moment().unix())
+        .set('localeChange', false)
         .set('postList', action.listData);
     }
-    case POST_LOADED: {
-      // Update the state with the full post data
+    case CHANGE_LOCALE:
       return state
-        .set('postData', action.data);
-    }
+        .set('localeChange', true);
     default:
       return state;
   }

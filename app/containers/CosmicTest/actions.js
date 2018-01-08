@@ -6,7 +6,6 @@
 
 import {
   LIST_LOADED,
-  POST_LOADED,
 } from './constants';
 
 /**
@@ -20,13 +19,5 @@ export function listLoaded(listData) {
   return {
     type: LIST_LOADED,
     listData,
-  };
-}
-
-export function postLoaded(slug, data) {
-  return {
-    type: POST_LOADED,
-    slug,
-    data,
   };
 }
