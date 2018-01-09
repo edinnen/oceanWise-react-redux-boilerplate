@@ -15,7 +15,7 @@ export default {
   primaryBlue: '#005EB8',
   lightBlue: '#64A5C3',
   blueGrey: '#6A7B83',
-  seaGreen: '#00B098',
+  seaGreen: '#00B398',
   orange: '#F59F4F',
   rescueRed: '#D44E4E',
   apple: '#8FBA60',
