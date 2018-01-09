@@ -19,7 +19,7 @@ import Button from 'components/Button';
 import injectReducer from 'utils/injectReducer';
 
 import config from '../../cosmicConfig';
-import makeSelectCosmicTest from './selectors';
+import makeSelectCosmicTest, { makeSelectLocale } from './selectors';
 import reducer from './reducer';
 import { listLoaded } from './actions';
 
@@ -52,18 +52,12 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
    *
    */
   getPosts() {
-    // Get objects of type 'Post'. From these pull the slug, title, and metadata. The metadata must be pulled to read the custom "locale" metadata field.
-    // CosmicJS seems to disallow GraphQL queries with the standard locale option
-    const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "posts"){ slug, title } }'; // eslint-disable-line prefer-template
-    axios.post('https://graphql.cosmicjs.com/v1', {
-      query: query, // eslint-disable-line object-shorthand
-      contentType: 'application/graphql',
-    })
+    // Get objects of type 'posts'. From these pull the slug and title
+
+    axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object-type/posts?locale=' + this.props.locale) // eslint-disable-line prefer-template
     .then((res) => {
-      // Find unique and add only slugs (locale causes two objects with the same slug/key which makes React sad)
-      // For our purposes it does not matter which object we use here
       const uniqueData = [];
-      res.data.data.objectsByType.map((item) => {
+      res.data.objects.map((item) => {
         const found = uniqueData.some((data) => { // eslint-disable-line
           return data.slug === item.slug;
         });
@@ -75,6 +69,25 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
         loading: false,
       });
       this.props.dispatch(listLoaded(this.state.data));
+    })
+    // Default to the English version if the current locale does not exist for this object type
+    .catch(() => {
+      axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object-type/posts?locale=en') // eslint-disable-line prefer-template
+      .then((res) => {
+        const uniqueData = [];
+        res.data.objects.map((item) => {
+          const found = uniqueData.some((data) => { // eslint-disable-line
+            return data.slug === item.slug;
+          });
+          if (!found) { uniqueData.push(item); }
+          return true;
+        });
+        this.setState({
+          data: uniqueData,
+          loading: false,
+        });
+        this.props.dispatch(listLoaded(this.state.data));
+      });
     });
   }
 
@@ -120,10 +133,12 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
 CosmicTest.propTypes = {
   dispatch: PropTypes.func.isRequired,
   cosmictest: PropTypes.object.isRequired,
+  locale: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   cosmictest: makeSelectCosmicTest(),
+  locale: makeSelectLocale(),
 });
 
 function mapDispatchToProps(dispatch) {
