@@ -1,7 +1,0 @@
-#import "../fragments/postPreview.graphql"
-
-query($bucketSlug: String! $readKey: String!){
-	objects: objectsByType(bucket_slug: acd331c0-e69f-11e7-b266-0bda9cde0587, read_key: rxA3MdlaFBv7KoWaKwfWbYGs6Sz7UFAzD7L4asuhxZkaO8eWid, type_slug: "posts") {
-		...PostPreview
-	}
-}

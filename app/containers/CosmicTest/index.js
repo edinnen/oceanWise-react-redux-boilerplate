@@ -45,7 +45,12 @@ export class CosmicTest extends React.PureComponent { // eslint-disable-line rea
     }
   }
 
-  // Get the post data and store it in the state.
+  /**
+   * Gets the post of the passed slug, store it to state, and dispatch POST_LOADED
+   *
+   * @param  {string} slug The slug of the post to pull
+   *
+   */
   getPosts() {
     // Get objects of type 'Post'. From these pull the slug, title, and metadata. The metadata must be pulled to read the custom "locale" metadata field.
     // CosmicJS seems to disallow GraphQL queries with the standard locale option

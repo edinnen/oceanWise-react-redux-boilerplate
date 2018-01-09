@@ -1,6 +1,0 @@
-fragment PostPreview on Object {
-	slug
-	typeSlug: type_slug
-	title
-	modifiedAt: modified_at
-}

@@ -10,12 +10,10 @@ import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
-// import R from 'ramda';
 import axios from 'axios';
 
 import Header from 'components/Header';
 import injectReducer from 'utils/injectReducer';
-import { makeSelectHomePage } from '../HomePage/selectors'; // Load in the homepage selector so we can access its state
 import config from '../../cosmicConfig';
 import reducer from './reducer';
 import { pageLoaded } from './actions';
@@ -37,6 +35,12 @@ export class CMSPage extends React.Component { // eslint-disable-line react/pref
     this.setState({ slug: this.props.match.params.pageSlug });
   }
 
+  /**
+   * Gets the page of the passed slug, store it to state, and dispatch PAGE_LOADED
+   *
+   * @param  {string} slug The slug of the page to pull
+   *
+   */
   getPage(slug) {
     // As CosmicJS's GraphQL implementation has no locale selector, here we use the REST API instead.
     axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object/' + slug + '?locale=' + this.props.locale) // eslint-disable-line prefer-template
@@ -65,6 +69,8 @@ export class CMSPage extends React.Component { // eslint-disable-line react/pref
   render() {
     const { pageData, slug } = this.state;
 
+    // If the slug in the state is not the same as the slug passed to the route...
+    // This ensures that pageData is refreshed when route is changed
     if (slug !== this.props.match.params.pageSlug) {
       this.getPage(this.props.match.params.pageSlug);
     }
@@ -94,7 +100,6 @@ CMSPage.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   cmspage: makeSelectCMSPage(),
-  homepage: makeSelectHomePage(), // Load the homepage's state to our props so we can access what we want
   locale: makeSelectLocale(),
 });
 

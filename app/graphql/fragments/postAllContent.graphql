@@ -1,8 +1,0 @@
-#import "./postPreview.graphql"
-
-fragment PostAllContent on Object {
-	...PostPreview
-	content
-	metadata
-	order
-}

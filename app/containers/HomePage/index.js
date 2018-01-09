@@ -59,6 +59,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     const store = this.props.homepage;
     this.setState({ loading: true });
 
+    // Refresh the page list if 5 minutes have elapsed, the pageList is empty, or if the locale has changed
     if (store.timestamp < (moment().unix() - 300) || store.pageList.length === 0 || store.localeChange) {
       this.getPageList();
     } else {
@@ -76,6 +77,10 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     }
   }
 
+  /**
+   * Gets a list of all the pages from CosmicJS, store it to state, and dispatch LIST_LOADED
+   *
+   */
   getPageList() {
     // Get objects of type 'Page'. From these pull the slug and title
     const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "pages"){slug, title, metadata} }'; // eslint-disable-line prefer-template
@@ -84,6 +89,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
       contentType: 'application/graphql',
     })
     .then((res) => {
+      // Only add unique slugs to the list
       const uniqueData = [];
       res.data.data.objectsByType.map((item) => {
         const found = uniqueData.some((data) => { // eslint-disable-line
