@@ -11,12 +11,13 @@ import { Helmet } from 'react-helmet';
 import { createStructuredSelector } from 'reselect';
 import { compose } from 'redux';
 import axios from 'axios';
+import moment from 'moment';
 
 import Header from 'components/Header';
 import injectReducer from 'utils/injectReducer';
 import config from '../../cosmicConfig';
 import reducer from './reducer';
-import { pageLoaded } from './actions';
+import { pageLoaded, listLoaded } from './actions';
 import makeSelectCMSPage, { makeSelectLocale } from './selectors';
 
 export class CMSPage extends React.Component { // eslint-disable-line react/prefer-stateless-function
@@ -26,14 +27,65 @@ export class CMSPage extends React.Component { // eslint-disable-line react/pref
       loading: true,
       pageData: {},
       slug: '',
+      pageList: [],
     };
     this.getPage = this.getPage.bind(this);
+    this.getPageList = this.getPageList.bind(this);
   }
 
   componentWillMount() {
+    const store = this.props.cmspage;
+
+    if (store.timestamp < (moment().unix() - 300) || store.pageList.length === 0 || store.localeChange) {
+      this.getPageList();
+    } else {
+      this.setState({ pageList: store.pageList });
+    }
     this.getPage(this.props.match.params.pageSlug);
     this.setState({ slug: this.props.match.params.pageSlug });
   }
+
+  /**
+   * Gets a list of all the pages from CosmicJS, store it to state, and dispatch LIST_LOADED
+   *
+   */
+  getPageList() {
+    // Get objects of type 'Page'. From these pull the slug and title
+    axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object-type/pages?locale=' + this.props.locale) // eslint-disable-line
+    .then((res) => {
+      const uniqueData = [];
+      res.data.objects.map((item) => {
+        const found = uniqueData.some((data) => { // eslint-disable-line
+          return data.slug === item.slug;
+        });
+        if (!found) { uniqueData.push(item); }
+        return true;
+      });
+      this.setState({
+        pageList: uniqueData,
+      });
+      this.props.dispatch(listLoaded(this.state.pageList));
+    })
+    // Load English list if selected locale is not found
+    .catch(() => {
+      axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object-type/pages?locale=en') // eslint-disable-line
+      .then((res) => {
+        const uniqueData = [];
+        res.data.objects.map((item) => {
+          const found = uniqueData.some((data) => { // eslint-disable-line
+            return data.slug === item.slug;
+          });
+          if (!found) { uniqueData.push(item); }
+          return true;
+        });
+        this.setState({
+          pageList: uniqueData,
+        });
+        this.props.dispatch(listLoaded(this.state.pageList));
+      });
+    });
+  }
+
 
   /**
    * Gets the page of the passed slug, store it to state, and dispatch PAGE_LOADED
@@ -93,6 +145,7 @@ export class CMSPage extends React.Component { // eslint-disable-line react/pref
 }
 
 CMSPage.propTypes = {
+  cmspage: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   locale: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,

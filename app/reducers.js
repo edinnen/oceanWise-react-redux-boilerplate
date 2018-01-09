@@ -8,6 +8,9 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 
 import globalReducer from 'containers/App/reducer';
 import languageProviderReducer from 'containers/LanguageProvider/reducer';
+import cmspageReducer from 'containers/CMSPage/reducer';
+import homeReducer from 'containers/HomePage/reducer';
+import cosmicTestReducer from 'containers/CosmicTest/reducer';
 
 /*
  * routeReducer
@@ -45,8 +48,9 @@ export default function createReducer(injectedReducers) {
     route: routeReducer,
     global: globalReducer,
     language: languageProviderReducer,
-    home: (state = Map({})) => state,
-    cosmicTest: (state = Map({})) => state, // This is required to get around "Unexpected property <REDUCER> found in previous state while saving to store". See http://bit.ly/2CNJIZy
+    cmspage: cmspageReducer,
+    home: homeReducer,
+    cosmicTest: cosmicTestReducer,
     ...injectedReducers,
   });
 }

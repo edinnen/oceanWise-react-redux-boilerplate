@@ -18,7 +18,8 @@ import messages from './messages';
 import DeskLogo from './logo.svg';
 import MobiLogo from './logo-mobile.svg';
 
-// Import the parent containers selector to borrow its state
+// Import the CMSPage containers selector to borrow its state for rerendering the nav links on language change
+import makeSelectCMSPage, { makeSelectLocation } from '../../containers/CMSPage/selectors';
 import { makeSelectHomePage } from '../../containers/HomePage/selectors';
 
 class Header extends React.Component { // eslint-disable-line react/prefer-stateless-function
@@ -48,8 +49,17 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
 
   render() {
     const { source } = this.state;
+    // Where are we? Select the appropriate reducer for our route
+    const location = this.props.location;
+    let data;
+    if (location.match(/\/.+/g)) { // If the route matches '/' with anything following it we are on a subpage, so load the CMS page reducer
+      data = this.props.cmspage;
+    } else {                       // The route is '/' so load the home page reducer
+      data = this.props.homepage;
+    }
 
-    const pageLinks = this.props.homepage.pageList.map((page) => {
+    // Render our CMS page slugs into the navigation buttons
+    const pageLinks = data.pageList.map((page) => {
       const url = '/' + page.slug; // eslint-disable-line prefer-template
       return (
         <Link to={url} key={page.slug}>
@@ -92,12 +102,16 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
 }
 
 Header.propTypes = {
-  homepage: PropTypes.object,
+  cmspage: PropTypes.object,
+  homepage: PropTypes.object.isRequired,
+  location: PropTypes.string,
 };
 
 // This maps the parent's state to our prop as we imported the parent's selector!
 const mapStateToProps = createStructuredSelector({
+  cmspage: makeSelectCMSPage(),
   homepage: makeSelectHomePage(),
+  location: makeSelectLocation(),
 });
 
 const withConnect = connect(mapStateToProps);
