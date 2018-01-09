@@ -63,7 +63,7 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
     if (store.timestamp < (moment().unix() - 300) || store.pageList.length === 0 || store.localeChange) {
       this.getPageList();
     } else {
-      this.setState({ loading: false, pageList: store.pageList, pageData: store.pageData });
+      this.setState({ loading: false, pageList: store.pageList });
     }
   }
 
@@ -83,15 +83,10 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
    */
   getPageList() {
     // Get objects of type 'Page'. From these pull the slug and title
-    const query = '{ objectsByType(bucket_slug: "' + config.bucket.slug + '", type_slug: "pages"){slug, title, metadata} }'; // eslint-disable-line prefer-template
-    axios.post('https://graphql.cosmicjs.com/v1', {
-      query: query, // eslint-disable-line object-shorthand
-      contentType: 'application/graphql',
-    })
+    axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object-type/pages?locale=' + this.props.locale) // eslint-disable-line
     .then((res) => {
-      // Only add unique slugs to the list
       const uniqueData = [];
-      res.data.data.objectsByType.map((item) => {
+      res.data.objects.map((item) => {
         const found = uniqueData.some((data) => { // eslint-disable-line
           return data.slug === item.slug;
         });
@@ -102,6 +97,24 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
         pageList: uniqueData,
       });
       this.props.dispatch(listLoaded(this.state.pageList));
+    })
+    // Load English list if selected locale is not found
+    .catch(() => {
+      axios.get('https://api.cosmicjs.com/v1/' + config.bucket.slug + '/object-type/pages?locale=en') // eslint-disable-line
+      .then((res) => {
+        const uniqueData = [];
+        res.data.objects.map((item) => {
+          const found = uniqueData.some((data) => { // eslint-disable-line
+            return data.slug === item.slug;
+          });
+          if (!found) { uniqueData.push(item); }
+          return true;
+        });
+        this.setState({
+          pageList: uniqueData,
+        });
+        this.props.dispatch(listLoaded(this.state.pageList));
+      });
     });
   }
 
@@ -130,6 +143,11 @@ export class HomePage extends React.PureComponent { // eslint-disable-line react
       error,
       repos,
     };
+
+    const store = this.props.homepage;
+    if (store.localeChange) {
+      this.getPageList();
+    }
 
     const styles = {
       radioButton: {
@@ -233,6 +251,7 @@ HomePage.propTypes = {
   onChangeUsername: PropTypes.func,
   homepage: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
+  locale: PropTypes.string.isRequired,
 };
 
 export function mapDispatchToProps(dispatch) {
