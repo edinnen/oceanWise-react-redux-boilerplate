@@ -8,6 +8,7 @@ import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+import OceanWiseNav from 'components/OceanWiseNav';
 import A from './A';
 import Img from './Img';
 import NavBar from './NavBar';
@@ -72,6 +73,7 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
 
     return (
       <div>
+        <OceanWiseNav />
         <A href="https://ocean.org">
           <Container>
             <Logo src={source} alt="Logo" />

@@ -7,7 +7,7 @@ const Logo = styled(NormalImg)`
   width: 157px;
   height: 60px;
   position: absolute;
-  top: 40px;
+  top: 75px;
   left: 20px;
 `;
 
