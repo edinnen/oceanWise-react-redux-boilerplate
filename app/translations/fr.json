@@ -34,5 +34,7 @@
   "boilerplate.containers.HomePage.tryme.message": "French -- Show Github repositories by",
   "boilerplate.containers.LocaleToggle.de": "de",
   "boilerplate.containers.LocaleToggle.en": "en",
-  "boilerplate.containers.NotFoundPage.header": "French -- Page not found."
+  "boilerplate.containers.NotFoundPage.header": "French -- Page not found.",
+  "app.components.OceanWiseNav.explore": "Explorez",
+  "app.components.OceanWiseNav.moreAt": " plus au "
 }
