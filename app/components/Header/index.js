@@ -2,6 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import Button from 'components/Button';
+import OceanWiseNav from 'components/OceanWiseNav';
 
 import A from './A';
 import Img from './Img';
@@ -42,6 +43,7 @@ class Header extends React.Component { // eslint-disable-line react/prefer-state
     const { source } = this.state;
     return (
       <div>
+        <OceanWiseNav />
         <A href="https://ocean.org">
           <Container>
             <Logo src={source} alt="Logo" />
